@@ -1,0 +1,453 @@
+@import url('https://fonts.googleapis.com/css2?family=Lora:wght@500;600;700&family=Mulish:wght@400;500;600;700&display=swap');
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+body {
+  font-family: 'Mulish', sans-serif;
+  background: #edeae4;
+  overflow: hidden;
+  /* NO SCROLL */
+}
+
+input[type=number]::-webkit-inner-spin-button,
+input[type=number]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+}
+
+input[type=number] {
+  -moz-appearance: textfield;
+}
+
+@keyframes shake {
+
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+
+  25% {
+    transform: translateX(-7px);
+  }
+
+  75% {
+    transform: translateX(7px);
+  }
+}
+
+@keyframes fadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes scaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.96);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes carFloat {
+
+  0%,
+  100% {
+    transform: translateY(0px);
+  }
+
+  50% {
+    transform: translateY(-3px);
+  }
+}
+
+.msg-anim {
+  animation: fadeUp 0.3s ease both;
+}
+
+.win-overlay {
+  animation: fadeIn 0.4s ease both;
+}
+
+.win-panel {
+  animation: scaleIn 0.45s ease both;
+}
+
+.car-float {
+  animation: carFloat 2s ease-in-out infinite;
+}
+
+.do-shake {
+  animation: shake 0.42s ease;
+}
+
+.math-input:focus {
+  outline: none;
+  border-color: #9db8a3 !important;
+  box-shadow: 0 0 0 4px rgba(157, 184, 163, 0.15);
+}
+
+/* ===== NO SCROLL + EVERYTHING FITS ===== */
+.page-wrapper {
+  height: 100dvh;
+  width: 100%;
+  display: flex;
+  align-items: stretch;
+  justify-content: center;
+  padding: 0;
+}
+
+.math-card {
+  width: 100%;
+  max-width: 520px;
+  height: 100dvh;
+  background: #faf8f4;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  /* no scroll */
+  padding: 14px 14px 12px;
+  border-radius: 0;
+  border: none;
+  box-shadow: none;
+}
+
+/* Desktop: centered card look */
+@media (min-width: 541px) {
+  body {
+    overflow-x: hidden;
+  }
+
+  .page-wrapper {
+    padding: 20px 16px;
+    align-items: center;
+  }
+
+  .math-card {
+    height: min(740px, 90vh);
+    border-radius: 24px;
+    border: 1px solid #ddd8d0;
+    box-shadow: 0 12px 50px rgba(50, 46, 42, 0.1), 0 2px 4px rgba(50, 46, 42, 0.05);
+    padding: 26px;
+  }
+}
+
+/* Home Page Styles */
+.home-container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  text-align: center;
+  justify-content: space-between;
+}
+
+.home-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 20px;
+  padding: 20px 0;
+}
+
+.hero-title {
+  font-family: 'Lora', serif;
+  font-size: clamp(32px, 8vw, 48px);
+  color: #2e2b27;
+  line-height: 1.1;
+}
+
+.hero-desc {
+  font-size: clamp(14px, 4vw, 16px);
+  color: #7a7470;
+  line-height: 1.6;
+  max-width: 400px;
+  margin: 0 auto;
+}
+
+.feature-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  text-align: left;
+  max-width: 320px;
+  margin: 0 auto;
+}
+
+.feature-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  font-size: 14px;
+  color: #6b6661;
+}
+
+.feature-icon {
+  color: #9db8a3;
+  font-weight: 800;
+}
+
+.btn-play {
+  background: #9db8a3;
+  color: white;
+  border: none;
+  padding: 18px 32px;
+  border-radius: 20px;
+  font-size: 18px;
+  font-weight: 800;
+  cursor: pointer;
+  transition: transform 0.2s, background 0.2s;
+  box-shadow: 0 10px 25px rgba(157, 184, 163, 0.3);
+  width: 100%;
+  max-width: 280px;
+  margin: 20px auto 0;
+}
+
+.btn-play:active {
+  transform: scale(0.96);
+}
+
+/* 3 sections */
+.top-area {
+  flex: 0 0 auto;
+}
+
+.mid-area {
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 12px;
+  min-height: 0;
+}
+
+.bottom-area {
+  flex: 0 0 auto;
+  padding-top: 10px;
+}
+
+/* Make mid content shrink on short screens */
+@media (max-height: 740px) {
+  .race-container {
+    height: 78px;
+  }
+
+  .question-block {
+    padding: 14px 10px;
+  }
+}
+
+@media (max-height: 680px) {
+  .race-container {
+    height: 68px;
+  }
+
+  .question-num {
+    font-size: 34px !important;
+  }
+
+  .question-ans {
+    font-size: 34px !important;
+  }
+
+  .math-card {
+    padding: 12px 12px 10px;
+  }
+}
+
+@media (max-height: 620px) {
+  .race-container {
+    height: 60px;
+  }
+
+  .question-num {
+    font-size: 30px !important;
+  }
+
+  .question-ans {
+    font-size: 30px !important;
+  }
+
+  .math-input {
+    padding: 12px 8px;
+  }
+
+  .btn-check {
+    padding: 12px 10px;
+  }
+
+  .btn-reset {
+    padding: 12px 14px;
+  }
+}
+
+/* UI blocks */
+.stats-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  border-bottom: 1px solid #eee7de;
+  padding-bottom: 10px;
+  margin-bottom: 10px;
+}
+
+.stats-item {
+  text-align: center;
+  flex: 1;
+  min-width: 0;
+}
+
+.muted-label {
+  font-size: 10px;
+  font-weight: 700;
+  color: #b0a89e;
+  text-transform: uppercase;
+}
+
+.stats-value {
+  font-size: 16px;
+  font-weight: 800;
+  color: #2e2b27;
+}
+
+.race-container {
+  border-radius: 16px;
+  overflow: hidden;
+  border: 1px solid #ddd8d0;
+  height: 90px;
+  position: relative;
+}
+
+.question-block {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 18px 12px;
+  background: #f3f0eb;
+  border-radius: 20px;
+  border: 1px solid #e5e0d8;
+}
+
+.question-num {
+  font-family: 'Lora', serif;
+  font-size: clamp(28px, 9vw, 46px);
+  color: #2e2b27;
+  line-height: 1;
+}
+
+.question-op {
+  font-size: clamp(16px, 5vw, 26px);
+  color: #a09a92;
+  line-height: 1;
+}
+
+.question-ans {
+  font-family: 'Lora', serif;
+  font-size: clamp(28px, 9vw, 46px);
+  color: #9db8a3;
+  line-height: 1;
+}
+
+.form-container {
+  display: flex;
+  gap: 10px;
+}
+
+.form-row {
+  display: flex;
+  gap: 10px;
+  flex: 1;
+  min-width: 0;
+}
+
+.math-input {
+  flex: 1;
+  min-width: 0;
+  font-size: clamp(18px, 5vw, 24px);
+  font-family: 'Lora', serif;
+  text-align: center;
+  padding: 14px 8px;
+  border-radius: 16px;
+  background: #fff;
+  color: #2e2b27;
+  transition: all 0.2s;
+  border: 2px solid #d4cec6;
+}
+
+.btn-check {
+  flex: 1;
+  font-size: 13px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: 14px 12px;
+  border-radius: 16px;
+  border: none;
+  background: #9db8a3;
+  color: #fff;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.btn-reset {
+  flex-shrink: 0;
+  font-size: 18px;
+  font-weight: 800;
+  padding: 14px 18px;
+  border-radius: 16px;
+  border: 2px solid #d4cec6;
+  background: transparent;
+  color: #7a7470;
+  cursor: pointer;
+}
+
+/* ===== FIX: remove left blank space in phone frame ===== */
+@media (max-width: 540px) {
+  .page-wrapper {
+    width: 100vw;
+    height: 100dvh;
+    padding: 0;
+    justify-content: stretch;
+    align-items: stretch;
+  }
+
+  .math-card {
+    width: 100%;
+    max-width: none;
+    height: 100dvh;
+    margin: 0;
+    border-radius: 0;
+  }
+}
