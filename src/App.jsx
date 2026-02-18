@@ -4,7 +4,7 @@ import Game from "./components/Game";
 
 export default function App() {
   return (
-    <BrowserRouter>
+    <BrowserRouter basename="/Math-game">
       <div className="page-wrapper">
         <div className="math-card">
           <Routes>

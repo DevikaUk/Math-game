@@ -12,7 +12,7 @@ function makeQuestion() {
 
 const PRAISE = ["Well done", "Correct", "Nicely done", "Great work", "Excellent", "Keep it up"];
 const WIN_STEPS = 5;
-const API_BASE = "http://localhost:5000/api";
+const API_BASE = import.meta.env.VITE_API_BASE || "http://localhost:5000/api";
 
 export default function Game() {
     const navigate = useNavigate();
