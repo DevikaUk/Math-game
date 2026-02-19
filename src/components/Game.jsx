@@ -3,6 +3,8 @@ import { useNavigate, Link } from "react-router-dom";
 import Lottie from "lottie-react";
 import car from "../assets/car.json";
 import flag from "../assets/flag.json";
+import { ScreenCapture } from "react-screen-capture";
+
 
 function makeQuestion() {
     const a = Math.floor(Math.random() * 11);
@@ -130,6 +132,7 @@ export default function Game() {
         setMsg({ text: "", type: "" });
         setWon(false);
         setShowWin(false);
+        setScreenCap(""); // Clear capture state
         wrongCountRef.current = 0;
         startTimeRef.current = Date.now();
     }
@@ -150,6 +153,40 @@ export default function Game() {
     const carPct = Math.min((steps / WIN_STEPS) * 82, 82);
     const progressPct = Math.min((steps / WIN_STEPS) * 100, 100);
 
+    const [screenCap, setScreenCap] = useState("");     // base64 png
+    const startCaptureRef = useRef(null);               // store onStartCapture
+
+    //screen capture - when screenCap updates, share it
+    useEffect(() => {
+        if (!screenCap || !showWin) return;
+
+        (async () => {
+            // Convert base64 -> Blob -> File
+            const res = await fetch(screenCap);
+            const blob = await res.blob();
+            const file = new File([blob], "math-race-score.png", { type: "image/png" });
+
+            const text = `I finished Math Race in ${formatMMSS(lastRun.timeMs)} 🏁`;
+
+            // Share if supported; otherwise just download
+            if (navigator.share && navigator.canShare?.({ files: [file] })) {
+                try {
+                    await navigator.share({ title: "Math Race Score", text, files: [file] });
+                    return;
+                } catch {
+                    // user cancelled or share failed -> fall back to download
+                }
+            }
+
+            const a = document.createElement("a");
+            a.href = screenCap;
+            a.download = "math-race-score.png";
+            a.click();
+        })();
+    }, [screenCap, showWin]);
+
+
+
     return (
         <>
             {/* Win overlay */}
@@ -168,78 +205,111 @@ export default function Game() {
                         padding: "20px",
                     }}
                 >
-                    <div
-                        className="win-panel"
-                        style={{
-                            background: "#faf8f4",
-                            borderRadius: "24px",
-                            border: "1px solid #ddd8d0",
-                            padding: "40px 24px",
-                            textAlign: "center",
-                            maxWidth: "360px",
-                            width: "100%",
-                            boxShadow: "0 32px 100px rgba(50,46,42,0.25)",
+                    <ScreenCapture onEndCapture={(base64) => setScreenCap(base64)}>
+                        {({ onStartCapture }) => {
+                            startCaptureRef.current = onStartCapture;
+                            return (
+                                <div
+                                    className="win-panel"
+                                    style={{
+                                        background: "#faf8f4",
+                                        borderRadius: "24px",
+                                        border: "1px solid #ddd8d0",
+                                        padding: "40px 24px",
+                                        textAlign: "center",
+                                        maxWidth: "360px",
+                                        width: "100%",
+                                        boxShadow: "0 32px 100px rgba(50,46,42,0.25)",
+                                    }}
+                                >
+                                    {lastRun.isNewBest && (
+                                        <div
+                                            style={{
+                                                background: "#fef3c7",
+                                                color: "#92400e",
+                                                fontWeight: 800,
+                                                padding: "8px 16px",
+                                                borderRadius: "99px",
+                                                display: "inline-block",
+                                                marginBottom: "16px",
+                                                fontSize: "14px",
+                                                border: "1px solid #fcd34d",
+                                            }}
+                                        >
+                                            New High Score! 🎉
+                                        </div>
+                                    )}
+
+                                    <p style={{ fontSize: "12px", fontWeight: 700, letterSpacing: "0.15em", textTransform: "uppercase", color: "#a09a92", marginBottom: "8px" }}>
+                                        Race complete
+                                    </p>
+                                    <p style={{ fontFamily: "'Lora', serif", fontSize: "32px", color: "#2e2b27", lineHeight: 1.1, marginBottom: "20px" }}>
+                                        🏁 Success!
+                                    </p>
+
+                                    <div style={{ background: "#f3f0eb", borderRadius: "20px", padding: "24px 16px", marginBottom: "24px" }}>
+                                        <div style={{ display: "flex", justifyContent: "space-around", marginBottom: "16px" }}>
+                                            <div>
+                                                <p style={{ fontSize: "11px", color: "#b0a89e", textTransform: "uppercase", fontWeight: 700 }}>Time Taken</p>
+                                                <p style={{ fontSize: "24px", fontWeight: 800, color: "#2e2b27" }}>{formatMMSS(lastRun.timeMs)}</p>
+                                            </div>
+                                            <div>
+                                                <p style={{ fontSize: "11px", color: "#b0a89e", textTransform: "uppercase", fontWeight: 700 }}>Best Time</p>
+                                                <p style={{ fontSize: "24px", fontWeight: 800, color: "#9db8a3" }}>{formatMMSS(stats.bestTimeMs)}</p>
+                                            </div>
+                                        </div>
+                                        <p style={{ fontSize: "14px", fontWeight: 600, color: "#6b6661" }}>{msg.text || "Wonderful job! You're getting faster."}</p>
+                                    </div>
+
+                                    {!screenCap ? (
+                                        <button
+                                            type="button"
+                                            onClick={() => onStartCapture()}
+                                            style={{
+                                                width: "100%",
+                                                padding: "16px",
+                                                borderRadius: "16px",
+                                                border: "none",
+                                                background: "#9db8a3",
+                                                color: "#fff",
+                                                fontWeight: 800,
+                                                fontSize: "16px",
+                                                cursor: "pointer",
+                                                boxShadow: "0 4px 12px rgba(157,184,163,0.3)",
+                                            }}
+                                        >
+                                            Share My Score 📤
+                                        </button>
+                                    ) : (
+                                        <button
+                                            onClick={handleReset}
+                                            style={{
+                                                width: "100%",
+                                                padding: "16px",
+                                                borderRadius: "16px",
+                                                border: "none",
+                                                background: "#9db8a3",
+                                                color: "#fff",
+                                                fontWeight: 800,
+                                                fontSize: "16px",
+                                                cursor: "pointer",
+                                                boxShadow: "0 4px 12px rgba(157,184,163,0.3)",
+                                            }}
+                                        >
+                                            Play Again ↺
+                                        </button>
+                                    )}
+
+                                    <p style={{ fontSize: "12px", color: "#b0a89e", marginTop: "16px", fontWeight: 600 }}>
+                                        {!screenCap ? "Capture your score to play again!" : "Score captured! Ready for another race?"}
+                                    </p>
+                                </div>
+                            );
                         }}
-                    >
-                        {lastRun.isNewBest && (
-                            <div
-                                style={{
-                                    background: "#fef3c7",
-                                    color: "#92400e",
-                                    fontWeight: 800,
-                                    padding: "8px 16px",
-                                    borderRadius: "99px",
-                                    display: "inline-block",
-                                    marginBottom: "16px",
-                                    fontSize: "14px",
-                                    border: "1px solid #fcd34d",
-                                }}
-                            >
-                                New High Score! 🎉
-                            </div>
-                        )}
-
-                        <p style={{ fontSize: "12px", fontWeight: 700, letterSpacing: "0.15em", textTransform: "uppercase", color: "#a09a92", marginBottom: "8px" }}>
-                            Race complete
-                        </p>
-                        <p style={{ fontFamily: "'Lora', serif", fontSize: "32px", color: "#2e2b27", lineHeight: 1.1, marginBottom: "20px" }}>
-                            🏁 Success!
-                        </p>
-
-                        <div style={{ background: "#f3f0eb", borderRadius: "20px", padding: "24px 16px", marginBottom: "24px" }}>
-                            <div style={{ display: "flex", justifyContent: "space-around", marginBottom: "16px" }}>
-                                <div>
-                                    <p style={{ fontSize: "11px", color: "#b0a89e", textTransform: "uppercase", fontWeight: 700 }}>Time Taken</p>
-                                    <p style={{ fontSize: "24px", fontWeight: 800, color: "#2e2b27" }}>{formatMMSS(lastRun.timeMs)}</p>
-                                </div>
-                                <div>
-                                    <p style={{ fontSize: "11px", color: "#b0a89e", textTransform: "uppercase", fontWeight: 700 }}>Best Time</p>
-                                    <p style={{ fontSize: "24px", fontWeight: 800, color: "#9db8a3" }}>{formatMMSS(stats.bestTimeMs)}</p>
-                                </div>
-                            </div>
-                            <p style={{ fontSize: "14px", fontWeight: 600, color: "#6b6661" }}>{msg.text || "Wonderful job! You're getting faster."}</p>
-                        </div>
-
-                        <button
-                            onClick={handleReset}
-                            style={{
-                                width: "100%",
-                                padding: "16px",
-                                borderRadius: "16px",
-                                border: "none",
-                                background: "#9db8a3",
-                                color: "#fff",
-                                fontWeight: 800,
-                                fontSize: "16px",
-                                cursor: "pointer",
-                                boxShadow: "0 4px 12px rgba(157,184,163,0.3)",
-                            }}
-                        >
-                            Play Again
-                        </button>
-                    </div>
+                    </ScreenCapture>
                 </div>
             )}
+
 
             {/* TOP */}
             <div className="top-area">
